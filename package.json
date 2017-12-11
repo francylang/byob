@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/francylang/byob#readme",
   "dependencies": {
+    "express": "^4.16.2",
     "nightmare": "^2.10.0"
   }
 }
