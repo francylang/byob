@@ -2,6 +2,8 @@ const Nightmare = require('nightmare');
 const nightmare = new Nightmare({show: true});
 const fs = require('fs');
 
+// remove this comment
+
 nightmare
   .goto('https://www.speedrun.com/games')
   .wait(2000)

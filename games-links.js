@@ -2,6 +2,8 @@ const Nightmare = require('nightmare');
 const nightmare = Nightmare({ show: true });
 const fs = require('fs');
 
+// remove this! 
+
 const links = [
   "/smo",
   "/sm64",
