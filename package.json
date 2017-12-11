@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/francylang/byob/issues"
   },
-  "homepage": "https://github.com/francylang/byob#readme"
+  "homepage": "https://github.com/francylang/byob#readme",
+  "dependencies": {
+    "nightmare": "^2.10.0"
+  }
 }
