@@ -20,7 +20,13 @@
   },
   "homepage": "https://github.com/francylang/byob#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "eslint": "^4.13.1",
     "express": "^4.16.2",
     "nightmare": "^2.10.0"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
   }
 }
