@@ -1,6 +1,5 @@
 
-const gamesData = require('../../../games-results.json');
-
+const gamesData = require('../../../game-results');
 
 const createRecord = (knex, record) => (
   knex('records').insert(record)
@@ -9,8 +8,8 @@ const createRecord = (knex, record) => (
 // each game is an array of three things: game info, runners info, records info
 const createGames = (knex, game) => (
   knex('games').insert({
-    title: game[0].title,
-    image: game[0].image,
+    game_title: game[0].game.title,
+    game_image: game[0].game.image,
   }, 'id')
     .then((gameId) => {
       const recordPromises = [];
@@ -18,10 +17,10 @@ const createGames = (knex, game) => (
       game[2].records.forEach((record) => {
         recordPromises.push(
           createRecord(knex, {
-            game_id: gameId[0],
             handle: record.username,
             rank: record.ranking,
             time: record.time,
+            game_id: gameId[0],
           }), // returns a record promise
         );
       });// returns an array of record promieses
