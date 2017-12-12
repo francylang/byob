@@ -2,8 +2,6 @@ const Nightmare = require('nightmare');
 const nightmare = Nightmare({ show: true });
 const fs = require('fs');
 
-// remove this!
-
 const links = [
   "/smo",
   "/sm64",
@@ -33,10 +31,34 @@ links.reduce((acc, url) => {
       .goto(`https://www.speedrun.com${url}`)
       .wait('body')
       .evaluate(() => {
-        let gamesArray = [];
+        let runnersArray = [];
+        let recordsArray = [];
         let gameTitle = document.querySelector('h5 a').innerText;
-        gamesArray.push(gameTitle);
-        return gamesArray;
+        let gameImg = document.querySelector('h5 + p img').src;
+        let runners = document.querySelectorAll('.username');
+        let recordsTable = $('tbody tr');
+        for (let i = 0; i < runners.length; i++) {
+          runnersArray.push(runners[i].innerText);
+        }
+        for (let i = 1; i < recordsTable.length; i++) {
+          let ranking = recordsTable[i].children[0].innerText;
+          let username = recordsTable[i].children[1].innerText;
+          let time = recordsTable[i].children[2].innerText;
+          recordsArray.push({
+            ranking,
+            username,
+            time,
+          });
+        }
+        return [
+          { game: {
+            title: gameTitle,
+            image: gameImg,
+          }
+          },
+          { runners: runnersArray },
+          { records: recordsArray },
+        ]
       })
       .then(result => {
         results.push(result);
@@ -44,5 +66,15 @@ links.reduce((acc, url) => {
       })
   })
 }, Promise.resolve([]))
-  .then(results => console.log('you scraped games links', results))
+  .then(results => {
+    fs.writeFile(
+      'game-results.json', 
+      JSON.stringify(results, null, 2), 
+      'utf8', 
+      (error) => {
+        if (error) throw error;
+        console.log('Games saved to game-results.js')
+      }
+    );
+  })
   .catch(error => console.error({error}))
