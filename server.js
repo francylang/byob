@@ -32,6 +32,34 @@ app.get('/api/v1/games', (request, response) => {
     });
 });
 
+app.get('/api/v1/records', (request, response) => {
+  database('records').select()
+    .then((records) => {
+      return response.status(200).json(records)
+    })
+    .catch((error) => {
+      return response.status(500).json({ error })
+    })
+})
+
+app.get('/api/v1/games/:id', (request, response) => {
+  const { id } = request.params;
+
+  database('games').where('id', id).select()
+    .then(game => {
+      if (game) {
+        console.log(game[0])
+        return reponse.status(200).json(game);
+      }
+      return response.status(404).json({
+        error: `Unable to locate record with id of ${id}`
+      })
+    })
+    .catch(error => {
+      return response.status(500).json({ error })
+    })
+})
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
 })
