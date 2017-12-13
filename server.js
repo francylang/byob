@@ -90,13 +90,25 @@ app.post('/api/v1/games', (request, response) => {
       });
     }
   }
-  database('games').insert(game, '*')
-    .then((game) => {
-      return response.status(201).json(game);
-    })
+  return database('games').insert(game, '*')
+    .then(() => response.status(201).json(game))
     .catch(error => response.status(500).json({ error }));
 });
 
+app.post('/api/v1/games/:id/records', (request, response) => {
+  const record = request.body;
+
+  for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
+    if (!record[requiredParameter]) {
+      return response.status(422).json({
+        error: `You are missing the ${requiredParameter} property.`,
+      });
+    }
+  }
+  return database('records').insert(record, '*')
+    .then(() => response.status(201).json(record))
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
