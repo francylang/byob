@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -60,6 +61,35 @@ app.get('/api/v1/records/:id', (request, response) => {
       return response.status(404).json({
         error: `Unable to locate record with id of ${id}`,
       });
+    })
+    .catch(error => response.status(500).json({ error }));
+});
+
+// app.get('api/v1/games/:id/records', (request, response) => {
+//   const gameId = request.params.id;
+//
+//   database('records').where('game_id', )gameId.select()
+//     .then((records) => {
+//       if (records) {
+//         return response.status(200).json(records);
+//       }
+//     })
+//     .catch(error => response.status(500).json({ error }));
+// });
+
+app.post('/api/v1/games', (request, response) => {
+  const game = request.body;
+
+  for (const requiredParameter of ['game_title']) {
+    if (!game[requiredParameter]) {
+      return response.status(422).json({
+        error: `You are missing the ${requiredParameter} property.`,
+      });
+    }
+  }
+  database('games').insert(game, '*')
+    .then((game) => {
+      return response.status(201).json(game);
     })
     .catch(error => response.status(500).json({ error }));
 });
