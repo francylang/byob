@@ -65,17 +65,20 @@ app.get('/api/v1/records/:id', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
-// app.get('api/v1/games/:id/records', (request, response) => {
-//   const gameId = request.params.id;
-//
-//   database('records').where('game_id', )gameId.select()
-//     .then((records) => {
-//       if (records) {
-//         return response.status(200).json(records);
-//       }
-//     })
-//     .catch(error => response.status(500).json({ error }));
-// });
+app.get('/api/v1/games/:id/records', (request, response) => {
+  const { id } = request.params;
+
+  database('records').where('game_id', id).select()
+    .then((records) => {
+      if (records) {
+        return response.status(200).json(records);
+      }
+      return response.status(404).json({
+        error: `Unable to locate game record with id of ${id}`,
+      });
+    })
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.post('/api/v1/games', (request, response) => {
   const game = request.body;
