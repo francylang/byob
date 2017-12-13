@@ -123,6 +123,29 @@ app.delete('/api/v1/records/:id', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
+app.delete('/api/v1/games/:id', (request, response) => {
+  const { id } = request.params;
+
+  database('games').where({ id }).del()
+    .then((game) => {
+      if (game) {
+        response.sendStatus(204);
+      }
+      response.status(422).json({ error: `No resource with an id of ${id} was found.` })
+    })
+    .catch(error => response.status(500).json({ error }));
+
+  database('records').where({ game_id: id }).del()
+    .then((record) => {
+      if (record) {
+        response.sendStatus(204);
+      }
+      response.status(422).json({ error: `No resource with an id of ${id} was found` })
+    })
+    .catch(error => response.status(500).json({ error })); 
+
+}) 
+
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
