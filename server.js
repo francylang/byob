@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -10,7 +11,7 @@ const httpsRedirect = (request, response, next) => {
   if (request.header('x-forwarded-proto') !== 'https') {
     return response.redirect(`https://${request.get('host')}${request.url}`);
   }
-  next();
+  return next();
 };
 
 if (process.env.NODE_ENV === 'production') { app.use(httpsRedirect); }
@@ -24,42 +25,105 @@ app.locals.title = 'Build Your Own Backend';
 
 app.get('/api/v1/games', (request, response) => {
   database('games').select()
-    .then((games) => {
-      return response.status(200).json(games)
-    })
-    .catch((error) => {
-      return response.status(500).json({ error });
-    });
+    .then(games => response.status(200).json(games))
+    .catch(error => response.status(500).json({ error }));
 });
 
 app.get('/api/v1/records', (request, response) => {
   database('records').select()
-    .then((records) => {
-      return response.status(200).json(records)
-    })
-    .catch((error) => {
-      return response.status(500).json({ error })
-    })
-})
+    .then(records => response.status(200).json(records))
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.get('/api/v1/games/:id', (request, response) => {
   const { id } = request.params;
 
   database('games').where('id', id).select()
-    .then(game => {
+    .then((game) => {
       if (game) {
-        console.log(game[0])
-        return reponse.status(200).json(game);
+        return response.status(200).json(game);
       }
       return response.status(404).json({
-        error: `Unable to locate record with id of ${id}`
-      })
+        error: `Unable to locate record with id of ${id}`,
+      });
     })
-    .catch(error => {
-      return response.status(500).json({ error })
+    .catch(error => response.status(500).json({ error }));
+});
+
+app.get('/api/v1/records/:id', (request, response) => {
+  const { id } = request.params;
+
+  database('records').where('id', id).select()
+    .then((record) => {
+      if (record) {
+        return response.status(200).json(record);
+      }
+      return response.status(404).json({
+        error: `Unable to locate record with id of ${id}`,
+      });
     })
-})
+    .catch(error => response.status(500).json({ error }));
+});
+
+app.get('/api/v1/games/:id/records', (request, response) => {
+  const { id } = request.params;
+
+  database('records').where('game_id', id).select()
+    .then((records) => {
+      if (records) {
+        return response.status(200).json(records);
+      }
+      return response.status(404).json({
+        error: `Unable to locate game record with id of ${id}`,
+      });
+    })
+    .catch(error => response.status(500).json({ error }));
+});
+
+app.post('/api/v1/games', (request, response) => {
+  const game = request.body;
+
+  for (const requiredParameter of ['game_title']) {
+    if (!game[requiredParameter]) {
+      return response.status(422).json({
+        error: `You are missing the ${requiredParameter} property.`,
+      });
+    }
+  }
+  return database('games').insert(game, '*')
+    .then(() => response.status(201).json(game))
+    .catch(error => response.status(500).json({ error }));
+});
+
+app.post('/api/v1/games/:id/records', (request, response) => {
+  const record = request.body;
+
+  for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
+    if (!record[requiredParameter]) {
+      return response.status(422).json({
+        error: `You are missing the ${requiredParameter} property.`,
+      });
+    }
+  }
+  return database('records').insert(record, '*')
+    .then(() => response.status(201).json(record))
+    .catch(error => response.status(500).json({ error }));
+});
+
+app.delete('/api/v1/records/:id', (request, response) => {
+  const { id } = request.params;
+
+  database('records').where({ id }).del()
+    .then((record) => {
+      if (record) {
+        return response.sendStatus(204);
+      }
+      response.status(422).json({ error: `No resource with an id of ${id} was found.` });
+    })
+    .catch(error => response.status(500).json({ error }));
+});
+
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
-})
+});
