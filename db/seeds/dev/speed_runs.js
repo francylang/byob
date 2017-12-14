@@ -3,9 +3,8 @@ const gamesData = require('../../../utils/game-results');
 
 const createRecord = (knex, record) => (
   knex('records').insert(record)
-); // returns a record promise
+);
 
-// each game is an array of three things: game info, runners info, records info
 const createGames = (knex, game) => (
   knex('games').insert({
     game_title: game[0].game.title,
@@ -21,23 +20,24 @@ const createGames = (knex, game) => (
           time: record.time,
           game_id: gameId[0],
         }));
-      });// returns an array of record promieses
+      });
 
-      return Promise.all(recordPromises); // resolves records promises
-    }) // returns a game promise
+      return Promise.all(recordPromises);
+    })
 );
 
 exports.seed = (knex, Promise) => (
-  knex('records').del() // delete records first
-    .then(() => knex('games').del()) // delete all games
+  knex('records').del()
+    .then(() => knex('games').del())
     .then(() => {
       const gamePromises = [];
 
       gamesData.forEach((game) => {
         gamePromises.push(createGames(knex, game));
-      }); // return array of games promises
+      });
 
-      return Promise.all(gamePromises); // resolve games promises
+      return Promise.all(gamePromises);
     })
+    // eslint-disable-next-line
     .catch(error => console.log(`Error seeding data: ${error}`))
 );
