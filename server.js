@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+/* eslint-disable camelcase */
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -156,7 +157,7 @@ app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
   database('records').where({ id }).del()
     .then((record) => {
       if (record) {
-        return response.sendStatus(204);
+        response.sendStatus(204);
       }
       response.status(422).json({ error: `No resource with an id of ${id} was found.` });
     })
@@ -171,7 +172,7 @@ app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
       if (game) {
         response.sendStatus(204);
       }
-      response.status(422).json({ error: `No resource with an id of ${id} was found.` })
+      response.status(422).json({ error: `No resource with an id of ${id} was found.` });
     })
     .catch(error => response.status(500).json({ error }));
 
@@ -180,39 +181,41 @@ app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
       if (record) {
         response.sendStatus(204);
       }
-      response.status(422).json({ error: `No resource with an id of ${id} was found` })
+      response.status(422).json({ error: `No resource with an id of ${id} was found` });
     })
-    .catch(error => response.status(500).json({ error })); 
-
-}) 
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
   const { handle, rank, time } = request.body;
   const { id } = request.params;
-  
+
   database('records').where({ id }).update({ handle, rank, time })
     .then((record) => {
       if (record) {
-        response.sendStatus(200).json(record)
+        response.sendStatus(200).json(record);
       }
-      response.status(422).json(`No resource with an id of ${id} was found`)
-    }).catch(error => response.status(500).json({ error }));
-})
+      response.status(422).json(`No resource with an id of ${id} was found`);
+    })
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.patch('/api/v1/games/:id', checkAdmin, (request, response) => {
   const { game_title, game_image } = request.body;
   const { id } = request.params;
-  
+
   database('games').where({ id }).update({ game_title, game_image })
     .then((game) => {
       if (game) {
-        response.sendStatus(200).json(game)
+        response.sendStatus(200).json(game);
       }
-      response.status(422).json(`No resource with an id of ${id} was found`)
-    }).catch(error => response.status(500).json({ error }));
-})
+      response.status(422).json(`No resource with an id of ${id} was found`);
+    })
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.listen(app.get('port'), () => {
+  // eslint-disable-next-line
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
 });
 
