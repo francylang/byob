@@ -19,8 +19,9 @@ const httpsRedirect = (request, response, next) => {
 
 if (process.env.NODE_ENV === 'production') { app.use(httpsRedirect); }
 
+app.use(express.static(__dirname + '/public'));
+
 const environment = process.env.NODE_ENV || 'development';
-console.log(process.env.NODE_ENV);
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
