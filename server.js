@@ -146,6 +146,18 @@ app.delete('/api/v1/games/:id', (request, response) => {
 
 }) 
 
+app.patch('/api/v1/records/:id', (request, response) => {
+  const { rank, time } = request.body;
+  const { id } = request.params;
+  
+  database('records').where({ id }).update({ rank, time })
+    .then((record) => {
+      if (record) {
+        response.sendStatus(200).json(record)
+      }
+      response.status(422).json(`No resource with an id of ${id} was found`)
+    }).catch(error => response.status(500).json({ error }));
+})
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
