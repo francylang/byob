@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
+const path = require('path');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,7 +20,7 @@ const httpsRedirect = (request, response, next) => {
 
 if (process.env.NODE_ENV === 'production') { app.use(httpsRedirect); }
 
-app.use(express.static(__dirname, '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
