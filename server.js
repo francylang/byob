@@ -71,9 +71,16 @@ app.get('/api/v1/games', (request, response) => {
 });
 
 app.get('/api/v1/records', (request, response) => {
-  database('records').select()
-    .then(records => response.status(200).json(records))
-    .catch(error => response.status(500).json({ error }));
+  const gameId = request.param('id');
+  if (gameId) {
+    database('records').where('game_id', gameId).select()
+      .then(records => response.status(200).json(records))
+      .catch(error => response.status(500).json({ error }));
+  } else {
+    database('records').select()
+      .then(records => response.status(200).json(records))
+      .catch(error => response.status(500).json({ error }));
+  }
 });
 
 app.get('/api/v1/games/:id', (request, response) => {
@@ -137,6 +144,7 @@ app.post('/api/v1/games', checkAdmin, (request, response) => {
 });
 
 app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
+  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const record = request.body;
 
   for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
@@ -152,6 +160,9 @@ app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
 });
 
 app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
+
+  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
+
   const { id } = request.params;
 
   database('records').where({ id }).del()
@@ -165,6 +176,8 @@ app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
 });
 
 app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
+
+  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { id } = request.params;
 
   database('games').where({ id }).del()
@@ -187,6 +200,8 @@ app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
 });
 
 app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
+
+  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { handle, rank, time } = request.body;
   const { id } = request.params;
 
@@ -201,6 +216,8 @@ app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
 });
 
 app.patch('/api/v1/games/:id', checkAdmin, (request, response) => {
+
+  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { game_title, game_image } = request.body;
   const { id } = request.params;
 
