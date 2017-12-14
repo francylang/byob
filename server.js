@@ -1,4 +1,4 @@
-/* eslint-disable no-restricted-syntax, camelcase */
+/* eslint-disable no-restricted-syntax, camelcase, no-unused-expressions */
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
@@ -19,7 +19,7 @@ const httpsRedirect = (request, response, next) => {
 
 if (process.env.NODE_ENV === 'production') { app.use(httpsRedirect); }
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname, '/public'));
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
@@ -39,31 +39,28 @@ const checkAdmin = (request, response, next) => {
 
   decoded.admin ?
     next() :
-    response.status(403).send('Invalid request credentials')
-
-  //  is this error handling redundant? error codes correct? idk
+    response.status(403).send('Invalid request credentials');
 };
-
+  //  is this error handling redundant? error codes correct? idk
 app.post('/api/v1/authenticate', (request, response) => {
-
   const emailSuffix = request.body.email.split('@')[1];
 
-  for (let requiredParameter of ['email', 'appName']) {
+  for (const requiredParameter of ['email', 'appName']) {
     if (!request.body[requiredParameter]) {
-      return response.status(422).send({
-        error: `Expected format of { email: <string>, appName: <string> }. You are missing a ${requiredParameter} property`
-      })
+      response.status(422).send({
+        error: `Expected format of { email: <string>, appName: <string> }. You are missing a ${requiredParameter} property`,
+      });
     }
   }
 
   const payload = emailSuffix === 'turing.io' ?
     Object.assign({}, request.body, { admin: true }) :
-    Object.assign({}, request.body, { admin: false })
+    Object.assign({}, request.body, { admin: false });
 
   const token = jwt.sign(payload, process.env.DB_SECRET, { expiresIn: '2 days' });
 
-  response.status(201).send({ token })
-})
+  response.status(201).send({ token });
+});
 
 app.get('/api/v1/games', (request, response) => {
   database('games').select()
@@ -130,7 +127,11 @@ app.get('/api/v1/games/:id/records', (request, response) => {
 });
 
 app.post('/api/v1/games', checkAdmin, (request, response) => {
-  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
+  const game = Object.assign(
+    {},
+    { game_title: request.body.game_title },
+    { game_image: request.body.game_image },
+  );
 
   for (const requiredParameter of ['game_title']) {
     if (!game[requiredParameter]) {
@@ -145,8 +146,13 @@ app.post('/api/v1/games', checkAdmin, (request, response) => {
 });
 
 app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
-  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
-  const record = request.body;
+  const record = Object.assign(
+    {},
+    { handle: request.body.handle },
+    { rank: request.body.rank },
+    { time: request.body.time },
+    { game_id: request.body.game_id },
+  );
 
   for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
     if (!record[requiredParameter]) {
@@ -161,9 +167,6 @@ app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
 });
 
 app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
-
-  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
-
   const { id } = request.params;
 
   database('records').where({ id }).del()
@@ -177,8 +180,6 @@ app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
 });
 
 app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
-
-  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { id } = request.params;
 
   database('games').where({ id }).del()
@@ -201,8 +202,6 @@ app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
 });
 
 app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
-
-  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { handle, rank, time } = request.body;
   const { id } = request.params;
 
@@ -217,8 +216,6 @@ app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
 });
 
 app.patch('/api/v1/games/:id', checkAdmin, (request, response) => {
-
-  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { game_title, game_image } = request.body;
   const { id } = request.params;
 

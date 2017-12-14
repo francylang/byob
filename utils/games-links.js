@@ -1,4 +1,6 @@
+/* eslint-disable no-undef, arrow-body-style */
 const Nightmare = require('nightmare');
+
 const nightmare = Nightmare({ show: true });
 const fs = require('fs');
 
@@ -22,28 +24,28 @@ const links = [
   '/mk8dx',
   '/destiny2',
   '/nsmbw',
-  '/mmx'
+  '/mmx',
 ];
 
 links.reduce((acc, url) => {
-  return acc.then(results => {
+  return acc.then((results) => {
     return nightmare
       .goto(`https://www.speedrun.com${url}`)
       .wait('body')
       .evaluate(() => {
-        let runnersArray = [];
-        let recordsArray = [];
-        let gameTitle = document.querySelector('h5 a').innerText;
-        let gameImg = document.querySelector('h5 + p img').src;
-        let runners = document.querySelectorAll('.username');
-        let recordsTable = $('tbody tr');
-        for (let i = 0; i < runners.length; i++) {
+        const runnersArray = [];
+        const recordsArray = [];
+        const gameTitle = document.querySelector('h5 a').innerText;
+        const gameImg = document.querySelector('h5 + p img').src;
+        const runners = document.querySelectorAll('.username');
+        const recordsTable = $('tbody tr');
+        for (let i = 0; i < runners.length; i + 1) {
           runnersArray.push(runners[i].innerText);
         }
-        for (let i = 1; i < recordsTable.length; i++) {
-          let ranking = recordsTable[i].children[0].innerText;
-          let username = recordsTable[i].children[1].innerText;
-          let time = recordsTable[i].children[2].innerText;
+        for (let i = 1; i < recordsTable.length; i + 1) {
+          const ranking = recordsTable[i].children[0].innerText;
+          const username = recordsTable[i].children[1].innerText;
+          const time = recordsTable[i].children[2].innerText;
           recordsArray.push({
             ranking,
             username,
@@ -51,30 +53,33 @@ links.reduce((acc, url) => {
           });
         }
         return [
-          { game: {
-            title: gameTitle,
-            image: gameImg,
-          }
+          {
+            game: {
+              title: gameTitle,
+              image: gameImg,
+            },
           },
           { runners: runnersArray },
           { records: recordsArray },
-        ]
+        ];
       })
-      .then(result => {
+      .then((result) => {
         results.push(result);
         return results;
-      })
-  })
+      });
+  });
 }, Promise.resolve([]))
-  .then(results => {
+  .then((results) => {
     fs.writeFile(
       'game-results.json',
       JSON.stringify(results, null, 2),
       'utf8',
       (error) => {
         if (error) throw error;
-        console.log('Games saved to game-results.js')
-      }
+        // eslint-disable-next-line
+        console.log('Games saved to game-results.js');
+      },
     );
   })
-  .catch(error => console.error({error}))
+  // eslint-disable-next-line
+  .catch(error => console.error({ error }));
