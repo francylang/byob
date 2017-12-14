@@ -56,7 +56,7 @@ describe('API routes', () => {
   });
 
   describe('GET /api/vi/records', () => {
-    it('should return all of the game records', () => {
+    it('should return all of the game records', (done) => {
       chai.request(server)
         .get('/api/v1/records')
         .then((response) => {
@@ -71,6 +71,7 @@ describe('API routes', () => {
           response.body[0].should.have.property('time');
           response.body[0].should.have.property('game_id');
         });
+        done();
     });
 
     it('should return a 404 if the path is incorrect', (done) => {
