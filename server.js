@@ -26,6 +26,22 @@ const database = require('knex')(configuration);
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Build Your Own Backend';
 
+const checkAdmin = (request, response, next) => {
+  const secret = process.env.DB_SECRET;
+  const token = request.body.token ||
+              request.param('token')
+              request.headers['authorization'];
+
+  const decoded = jwt.verify(token, process.env.DB_SECRET);
+
+  decoded.admin ?
+    next() :
+    response.status(403).send('Invalid request credentials')
+
+  //  is this error handling redundant? error codes correct? idk
+
+}
+
 app.post('/api/v1/authenticate', (request, response) => {
 
   const emailSuffix = request.body.email.split('@')[1];
@@ -42,12 +58,9 @@ app.post('/api/v1/authenticate', (request, response) => {
     Object.assign({}, request.body, { admin: true }) :
     Object.assign({}, request.body, { admin: false })
 
-  console.log(payload)
-
   const token = jwt.sign(payload, process.env.DB_SECRET, { expiresIn: '2 days' });
 
   response.status(201).send({ token })
-
 })
 
 app.get('/api/v1/games', (request, response) => {
@@ -107,8 +120,8 @@ app.get('/api/v1/games/:id/records', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
-app.post('/api/v1/games', (request, response) => {
-  const game = request.body;
+app.post('/api/v1/games', checkAdmin, (request, response) => {
+  const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
 
   for (const requiredParameter of ['game_title']) {
     if (!game[requiredParameter]) {
@@ -122,7 +135,7 @@ app.post('/api/v1/games', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
-app.post('/api/v1/games/:id/records', (request, response) => {
+app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
   const record = request.body;
 
   for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
@@ -137,7 +150,7 @@ app.post('/api/v1/games/:id/records', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
-app.delete('/api/v1/records/:id', (request, response) => {
+app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
   const { id } = request.params;
 
   database('records').where({ id }).del()
@@ -150,7 +163,7 @@ app.delete('/api/v1/records/:id', (request, response) => {
     .catch(error => response.status(500).json({ error }));
 });
 
-app.delete('/api/v1/games/:id', (request, response) => {
+app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
   const { id } = request.params;
 
   database('games').where({ id }).del()
@@ -173,7 +186,7 @@ app.delete('/api/v1/games/:id', (request, response) => {
 
 }) 
 
-app.patch('/api/v1/records/:id', (request, response) => {
+app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
   const { handle, rank, time } = request.body;
   const { id } = request.params;
   
@@ -186,7 +199,7 @@ app.patch('/api/v1/records/:id', (request, response) => {
     }).catch(error => response.status(500).json({ error }));
 })
 
-app.patch('/api/v1/games/:id', (request, response) => {
+app.patch('/api/v1/games/:id', checkAdmin, (request, response) => {
   const { game_title, game_image } = request.body;
   const { id } = request.params;
   
@@ -202,3 +215,5 @@ app.patch('/api/v1/games/:id', (request, response) => {
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
 });
+
+module.exports = app;
