@@ -1,10 +1,9 @@
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable camelcase */
+/* eslint-disable no-restricted-syntax, camelcase */
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
-require('dotenv').config()
+require('dotenv').config();
 
 const app = express();
 
@@ -21,6 +20,7 @@ const httpsRedirect = (request, response, next) => {
 if (process.env.NODE_ENV === 'production') { app.use(httpsRedirect); }
 
 const environment = process.env.NODE_ENV || 'development';
+console.log(process.env.NODE_ENV);
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
@@ -29,26 +29,26 @@ app.locals.title = 'Build Your Own Backend';
 
 const checkAdmin = (request, response, next) => {
   const secret = process.env.DB_SECRET;
-  const token = request.body.token ||
-              request.param('token')
-              request.headers['authorization'];
+  const token =
+    request.body.token ||
+    request.param('token') ||
+    request.headers.authorization;
 
-  const decoded = jwt.verify(token, process.env.DB_SECRET);
+  const decoded = jwt.verify(token, secret);
 
   decoded.admin ?
     next() :
     response.status(403).send('Invalid request credentials')
 
   //  is this error handling redundant? error codes correct? idk
-
-}
+};
 
 app.post('/api/v1/authenticate', (request, response) => {
 
   const emailSuffix = request.body.email.split('@')[1];
 
-  for(let requiredParameter of ['email', 'appName']){
-    if(!request.body[requiredParameter]){
+  for (let requiredParameter of ['email', 'appName']) {
+    if (!request.body[requiredParameter]) {
       return response.status(422).send({
         error: `Expected format of { email: <string>, appName: <string> }. You are missing a ${requiredParameter} property`
       })

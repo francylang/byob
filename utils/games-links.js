@@ -3,26 +3,26 @@ const nightmare = Nightmare({ show: true });
 const fs = require('fs');
 
 const links = [
-  "/smo",
-  "/sm64",
-  "/cuphead",
-  "/ahit",
-  "/supermetroid",
-  "/smw",
-  "/wf",
-  "/smb1",
-  "/sonicforces",
-  "/oot",
-  "/Getting_Over_It_With_Bennett_Foddy",
-  "/alttp",
-  "/sonicmania",
-  "/sms",
-  "/Refunct",
-  "/robloxsr4",
-  "/mk8dx",
-  "/destiny2",
-  "/nsmbw",
-  "/mmx"
+  '/smo',
+  '/sm64',
+  '/cuphead',
+  '/ahit',
+  '/supermetroid',
+  '/smw',
+  '/wf',
+  '/smb1',
+  '/sonicforces',
+  '/oot',
+  '/Getting_Over_It_With_Bennett_Foddy',
+  '/alttp',
+  '/sonicmania',
+  '/sms',
+  '/Refunct',
+  '/robloxsr4',
+  '/mk8dx',
+  '/destiny2',
+  '/nsmbw',
+  '/mmx'
 ];
 
 links.reduce((acc, url) => {
@@ -68,9 +68,9 @@ links.reduce((acc, url) => {
 }, Promise.resolve([]))
   .then(results => {
     fs.writeFile(
-      'game-results.json', 
-      JSON.stringify(results, null, 2), 
-      'utf8', 
+      'game-results.json',
+      JSON.stringify(results, null, 2),
+      'utf8',
       (error) => {
         if (error) throw error;
         console.log('Games saved to game-results.js')
