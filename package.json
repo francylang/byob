@@ -21,8 +21,10 @@
   "homepage": "https://github.com/francylang/byob#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "dotenv": "^4.0.0",
     "eslint": "^4.13.1",
     "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
     "knex": "^0.14.2",
     "nightmare": "^2.10.0",
     "pg": "^7.4.0"
