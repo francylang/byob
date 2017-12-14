@@ -1,9 +1,9 @@
-/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-restricted-syntax, camelcase */
 const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
-require('dotenv').config()
+require('dotenv').config();
 
 const app = express();
 
@@ -20,6 +20,7 @@ const httpsRedirect = (request, response, next) => {
 if (process.env.NODE_ENV === 'production') { app.use(httpsRedirect); }
 
 const environment = process.env.NODE_ENV || 'development';
+console.log(process.env.NODE_ENV);
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
@@ -28,26 +29,26 @@ app.locals.title = 'Build Your Own Backend';
 
 const checkAdmin = (request, response, next) => {
   const secret = process.env.DB_SECRET;
-  const token = request.body.token ||
-              request.param('token') ||
-              request.headers['authorization'];
+  const token =
+    request.body.token ||
+    request.param('token') ||
+    request.headers.authorization;
 
-  const decoded = jwt.verify(token, process.env.DB_SECRET);
+  const decoded = jwt.verify(token, secret);
 
   decoded.admin ?
     next() :
     response.status(403).send('Invalid request credentials')
 
   //  is this error handling redundant? error codes correct? idk
-
-}
+};
 
 app.post('/api/v1/authenticate', (request, response) => {
 
   const emailSuffix = request.body.email.split('@')[1];
 
-  for(let requiredParameter of ['email', 'appName']){
-    if(!request.body[requiredParameter]){
+  for (let requiredParameter of ['email', 'appName']) {
+    if (!request.body[requiredParameter]) {
       return response.status(422).send({
         error: `Expected format of { email: <string>, appName: <string> }. You are missing a ${requiredParameter} property`
       })
@@ -167,7 +168,7 @@ app.delete('/api/v1/records/:id', checkAdmin, (request, response) => {
   database('records').where({ id }).del()
     .then((record) => {
       if (record) {
-        return response.sendStatus(204);
+        response.sendStatus(204);
       }
       response.status(422).json({ error: `No resource with an id of ${id} was found.` });
     })
@@ -184,7 +185,7 @@ app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
       if (game) {
         response.sendStatus(204);
       }
-      response.status(422).json({ error: `No resource with an id of ${id} was found.` })
+      response.status(422).json({ error: `No resource with an id of ${id} was found.` });
     })
     .catch(error => response.status(500).json({ error }));
 
@@ -193,43 +194,45 @@ app.delete('/api/v1/games/:id', checkAdmin, (request, response) => {
       if (record) {
         response.sendStatus(204);
       }
-      response.status(422).json({ error: `No resource with an id of ${id} was found` })
+      response.status(422).json({ error: `No resource with an id of ${id} was found` });
     })
-    .catch(error => response.status(500).json({ error })); 
-
-}) 
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
 
   const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { handle, rank, time } = request.body;
   const { id } = request.params;
-  
+
   database('records').where({ id }).update({ handle, rank, time })
     .then((record) => {
       if (record) {
-        response.sendStatus(200).json(record)
+        response.sendStatus(200).json(record);
       }
-      response.status(422).json(`No resource with an id of ${id} was found`)
-    }).catch(error => response.status(500).json({ error }));
-})
+      response.status(422).json(`No resource with an id of ${id} was found`);
+    })
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.patch('/api/v1/games/:id', checkAdmin, (request, response) => {
 
   const game = Object.assign({}, {game_title: request.body.game_title}, {game_image: request.body.game_image});
   const { game_title, game_image } = request.body;
   const { id } = request.params;
-  
+
   database('games').where({ id }).update({ game_title, game_image })
     .then((game) => {
       if (game) {
-        response.sendStatus(200).json(game)
+        response.sendStatus(200).json(game);
       }
-      response.status(422).json(`No resource with an id of ${id} was found`)
-    }).catch(error => response.status(500).json({ error }));
-})
+      response.status(422).json(`No resource with an id of ${id} was found`);
+    })
+    .catch(error => response.status(500).json({ error }));
+});
 
 app.listen(app.get('port'), () => {
+  // eslint-disable-next-line
   console.log(`${app.locals.title} is running on ${app.get('port')}`);
 });
 
