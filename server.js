@@ -1,6 +1,9 @@
 /* eslint-disable no-restricted-syntax */
 const express = require('express');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config()
 
 const app = express();
 
@@ -22,6 +25,30 @@ const database = require('knex')(configuration);
 
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Build Your Own Backend';
+
+app.post('/api/v1/authenticate', (request, response) => {
+
+  const emailSuffix = request.body.email.split('@')[1];
+
+  for(let requiredParameter of ['email', 'appName']){
+    if(!request.body[requiredParameter]){
+      return response.status(422).send({
+        error: `Expected format of { email: <string>, appName: <string> }. You are missing a ${requiredParameter} property`
+      })
+    }
+  }
+
+  const payload = emailSuffix === 'turing.io' ?
+    Object.assign({}, request.body, { admin: true }) :
+    Object.assign({}, request.body, { admin: false })
+
+  console.log(payload)
+
+  const token = jwt.sign(payload, process.env.DB_SECRET, { expiresIn: '2 days' });
+
+  response.status(201).send({ token })
+
+})
 
 app.get('/api/v1/games', (request, response) => {
   database('games').select()
