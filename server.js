@@ -144,13 +144,8 @@ app.post('/api/v1/games', checkAdmin, (request, response) => {
 });
 
 app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
-  const record = Object.assign(
-    {},
-    { handle: request.body.handle },
-    { rank: request.body.rank },
-    { time: request.body.time },
-    { game_id: request.body.game_id },
-  );
+  // eslint-disable-next-line
+  const record = Object.assign({}, { handle: request.body.handle }, { rank: request.body.rank }, { time: request.body.time }, { game_id: request.body.game_id });
 
   for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
     if (!record[requiredParameter]) {
