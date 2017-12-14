@@ -31,6 +31,7 @@ describe('API routes', () => {
   describe('POST /api/v1/user/authenticate', () => {
 
   })
+
   describe('GET /api/v1/games', () => {
     it('should return all games', () => {
       return chai.request(server)
@@ -41,7 +42,9 @@ describe('API routes', () => {
           response.body.should.be.a('array');
           response.body.length.should.equal(20);
           response.body[0].should.have.property('game_title');
+          response.body.includes('Mega Man X')
           response.body[0].should.have.property('game_image');
+          response.body.includes('https://www.speedrun.com/themes/smo/cover-256.png')
       });
     });
 
@@ -65,11 +68,13 @@ describe('API routes', () => {
           response.body.should.be.a('array');
           response.body.length.should.equal(5292);
           response.body[0].should.have.property('handle');
-          response.body.includes('Mega Man X')
+          response.body.includes('infinitemystery')
           response.body[0].should.have.property('rank');
-          response.body.includes()
+          response.body.includes('1st')
           response.body[0].should.have.property('time');
+          response.body.includes('3h 23m 33s')
           response.body[0].should.have.property('game_id');
+          response.body.includes('10')
         });
         done();
     });
@@ -84,6 +89,11 @@ describe('API routes', () => {
     });
   });
 
+  describe('GET /api/vi/records/:id', () => {
+    it('should retrieve a record based on the id', () => {
+      chai.request(server)
+        .get('/api/v')
+    })
 
-
+  });
 });
