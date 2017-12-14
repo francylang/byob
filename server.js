@@ -128,11 +128,8 @@ app.get('/api/v1/games/:id/records', (request, response) => {
 });
 
 app.post('/api/v1/games', checkAdmin, (request, response) => {
-  const game = Object.assign(
-    {},
-    { game_title: request.body.game_title },
-    { game_image: request.body.game_image },
-  );
+  // eslint-disable-next-line
+  const game = Object.assign({}, { game_title: request.body.game_title }, { game_image: request.body.game_image });
 
   for (const requiredParameter of ['game_title']) {
     if (!game[requiredParameter]) {
