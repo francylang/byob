@@ -67,6 +67,7 @@ describe('API routes', () => {
           response.body[0].should.have.property('handle');
           response.body.includes('Mega Man X')
           response.body[0].should.have.property('rank');
+          response.body.includes()
           response.body[0].should.have.property('time');
           response.body[0].should.have.property('game_id');
         });
