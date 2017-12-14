@@ -147,13 +147,26 @@ app.delete('/api/v1/games/:id', (request, response) => {
 }) 
 
 app.patch('/api/v1/records/:id', (request, response) => {
-  const { rank, time } = request.body;
+  const { handle, rank, time } = request.body;
   const { id } = request.params;
   
-  database('records').where({ id }).update({ rank, time })
+  database('records').where({ id }).update({ handle, rank, time })
     .then((record) => {
       if (record) {
         response.sendStatus(200).json(record)
+      }
+      response.status(422).json(`No resource with an id of ${id} was found`)
+    }).catch(error => response.status(500).json({ error }));
+})
+
+app.patch('/api/v1/games/:id', (request, response) => {
+  const { game_title, game_image } = request.body;
+  const { id } = request.params;
+  
+  database('games').where({ id }).update({ game_title, game_image })
+    .then((game) => {
+      if (game) {
+        response.sendStatus(200).json(game)
       }
       response.status(422).json(`No resource with an id of ${id} was found`)
     }).catch(error => response.status(500).json({ error }));
