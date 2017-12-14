@@ -70,9 +70,9 @@ app.get('/api/v1/games', (request, response) => {
 });
 
 app.get('/api/v1/records', (request, response) => {
-  const gameId = request.param('id');
-  if (gameId) {
-    database('records').where('game_id', gameId).select()
+  const { id } = request.params;
+  if (id) {
+    database('records').where('game_id', id).select()
       .then(records => response.status(200).json(records))
       .catch(error => response.status(500).json({ error }));
   } else {
@@ -149,9 +149,7 @@ app.post('/api/v1/games/:id/records', checkAdmin, (request, response) => {
 
   for (const requiredParameter of ['handle', 'rank', 'time', 'game_id']) {
     if (!record[requiredParameter]) {
-      return response.status(422).json({
-        error: `You are missing the ${requiredParameter} property.`,
-      });
+      return response.status(422).json({ error: `You are missing the ${requiredParameter} property.` });
     }
   }
   return database('records').insert(record, '*')
