@@ -36,14 +36,11 @@ Will return a status code of 201, along with a JSON object of the posted informa
 ## Errors
 This endpoint will throw a 422 and a 500 error
 
-``
+```
 {
     error: 'Error message will be here.'
 }
-{
-    error: 'You are missing the __ property'
-}
-``
+```
 
 ***
 
