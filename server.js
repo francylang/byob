@@ -30,10 +30,9 @@ app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Build Your Own Backend';
 
 const checkAdmin = (request, response, next) => {
-  if (process.env.NODE_ENV === 'test') {
-    return next();
-  }
-
+  // if (process.env.NODE_ENV === 'test') {
+  //   next();
+  // }
   const secret = process.env.DB_SECRET;
   const token =
     request.body.token ||

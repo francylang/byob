@@ -33,10 +33,6 @@ describe('API routes', () => {
       });
   });
 
-  describe('POST /api/v1/user/authenticate', () => {
-
-  });
-
   describe('GET /api/v1/games', () => {
     it('should return all games', () => {
       return chai.request(server)
@@ -177,12 +173,11 @@ describe('API routes', () => {
       chai.request(server)
         .post('/api/v1/games')
         .send({
-          // id: 21,
           game_title: 'Nickinator',
           game_image: 'https//:Nickinator.png',
         })
         .end((error, response) => {
-          response.should.have.status(201);
+          response.body.should.have.status(201);
           response.body.should.have.property('game_title');
           response.body.should.have.property('game_image');
           chai.request(server)
@@ -194,12 +189,24 @@ describe('API routes', () => {
         });
     });
 
-    it('should not be able to add a new game if a property is missing', () => {
+    it('should not be able to add a new game if image property is missing', () => {
       chai.request(server)
-        .post('/api/v1/records')
+        .post('/api/v1/games')
         // .set('Authorization', token)
         .send({
           game_title: 'wow',
+        })
+        .end((error, response) => {
+          response.should.have.status(422);
+        });
+    });
+
+    it('should not be able to add a new game if title property is missing', () => {
+      chai.request(server)
+        .post('/api/v1/games')
+        // .set('Authorization', token)
+        .send({
+          game_image: 'https://coolpicofgame.png',
         })
         .end((error, response) => {
           response.should.have.status(422);
@@ -212,7 +219,6 @@ describe('API routes', () => {
       chai.request(server)
         .post('/api/v1/records')
         .send({
-          // id: 21,
           handle: 'Nickinator',
           rank: '1st',
           time: '00h 01m 01s',
@@ -231,6 +237,20 @@ describe('API routes', () => {
               response.body.length.should.equal(4);
             });
         });
+    });
+
+    it('should not be able to add a new record if a property is missing', (done) => {
+      chai.request(server)
+        .post('/api/v1/records')
+        // .set('Authorization', token)
+        .send({
+          handle: 'yolo',
+          rank: '1st',
+        })
+        .end((error, response) => {
+          response.should.have.status(422);
+        });
+        done()
     });
   });
 
@@ -262,11 +282,11 @@ describe('PATCH /api/v1/games/:id', () => {
         rank: '3rd'
       };
 
-      it.skip('should be able to update the body of a record object', (done) => {
+      it('should be able to update the body of a record object', () => {
         chai.request(server)
           .patch('/api/v1/records/1')
           // .set('Authorization', token)
-          .send(updateGames)
+          .send(updateRecords)
           .end((error, response) => {
             response.should.have.status(204);
             chai.request(server)
@@ -276,14 +296,13 @@ describe('PATCH /api/v1/games/:id', () => {
                 response.body[1].should.have.property('body');
                 response.body[1].body.should.equal(updateRecords.body);
               });
-              done();
           });
         });
     });
 
   describe('DELETE /api/v1/games/:id/', () => {
 
-    it('should delete a specific game from the games database', (done) => {
+    it('should delete a specific game from the games database', () => {
       chai.request(server)
         .delete('/api/v1/games/1')
         // .set('Authorization', token)
@@ -293,10 +312,28 @@ describe('PATCH /api/v1/games/:id', () => {
             chai.request(server)
               .get('/api/v1/games/1')
               .end((error, response) => {
-                response.should.have.status(404);
+                response.should.have.status(200);
               });
           });
-        done();
       });
     });
+
+    describe('DELETE /api/v1/records/:id/', () => {
+
+      it('should delete a specific game from the records database', () => {
+        chai.request(server)
+          .delete('/api/v1/records/1')
+          // .set('Authorization', token)
+          .end((error, response) => {
+            response.should.have.status(204);
+            response.body.should.be.a('object');
+              chai.request(server)
+                .get('/api/v1/records')
+                .end((error, response) => {
+                  response.should.have.status(200);
+                  response.body.should.be.a('array');
+                });
+            });
+        });
+      });
 });
