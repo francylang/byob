@@ -29,21 +29,27 @@ const database = require('knex')(configuration);
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Build Your Own Backend';
 
+app.set('secret', process.env.DB_SECRET);
 const checkAdmin = (request, response, next) => {
-  // if (process.env.NODE_ENV === 'test') {
-  //   next();
-  // }
-  const secret = process.env.DB_SECRET;
+  const secret = app.get('secret');
+
   const token =
     request.body.token ||
     request.params('token') ||
     request.headers.authorization;
 
-  const decoded = jwt.verify(token, secret);
+  if (!token) {
+    response.status(403).send('You must be authorized to hit this endpoint.');
+  }
 
-  decoded.admin ?
-    next() :
-    response.status(403).send('Invalid request credentials');
+  jwt.verify(token, secret, (error, decoded) => {
+    if (error) {
+      response.status(403).json('Invalid token.');
+    }
+    decoded.admin ?
+      next() :
+      response.status(403).send('Invalid request credentials');
+  });
 };
 
 app.post('/api/v1/authenticate', (request, response) => {
@@ -204,7 +210,7 @@ app.patch('/api/v1/records/:id', checkAdmin, (request, response) => {
       if (record) {
         response.sendStatus(200).json(record);
       }
-      response.status(422).json(`No resource with an id of ${id} was found`);
+      response.status(422).json({ error: `No resource with an id of ${id} was found.` });
     })
     .catch(error => response.status(500).json({ error }));
 });

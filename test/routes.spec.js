@@ -48,7 +48,6 @@ describe('API routes', () => {
           response.body.includes('https://www.speedrun.com/themes/smo/cover-256.png');
           response.body[0].should.have.property('created_at');
           response.body[0].should.have.property('updated_at');
-          // done();
         });
     });
 
@@ -84,15 +83,6 @@ describe('API routes', () => {
           done();
         });
     });
-
-    it('should return a 404 if the path is incorrect', (done) => {
-      chai.request(server)
-        .get('/api/v1/wrongo')
-        .end((error, response) => {
-          response.should.have.status(404);
-          done();
-        });
-    });
   });
 
   describe('GET /api/v1/records/:id', () => {
@@ -119,6 +109,16 @@ describe('API routes', () => {
         });
       done();
     });
+
+    it('should return a 404 if the path is incorrect', () => {
+      chai.request(server)
+        .get('/api/v1/wrongo')
+        .end((error, response) => {
+          response.should.have.status(404);
+          response.body.should.have.property('error');
+          response.body.error.should.eql('Unable to locate record with id of wrongo');
+        });
+    });
   });
 
   describe('GET /api/v1/games/:id', () => {
@@ -138,6 +138,17 @@ describe('API routes', () => {
           response.body.includes({ created_at: '2017-12-12T22:08:49.578Z' });
           response.body[0].should.have.property('updated_at');
           response.body.includes({ created_at: '2017-12-12T22:08:49.578Z' });
+        });
+      done();
+    });
+
+    it('should return a 404 if the path is incorrect', (done) => {
+      chai.request(server)
+        .get('/api/v1/loser')
+        .end((error, response) => {
+          response.should.have.status(404);
+          response.body.should.have.property('error');
+          response.body.error.should.eql('Unable to locate record with id of loser')
         });
       done();
     });
@@ -164,6 +175,16 @@ describe('API routes', () => {
           response.body.includes({ created_at: '2017-12-12T22:08:51.135Z' });
           response.body[0].should.have.property('updated_at');
           response.body.includes({ created_at: '2017-12-12T22:08:51.135Z' });
+        });
+    });
+
+    it('should return a 404 if the path is incorrect', () => {
+      chai.request(server)
+        .get('/api/v1/sawry')
+        .end((error, response) => {
+          response.should.have.status(404);
+          response.body.should.have.property('error');
+          response.body.error.should.equal('Unable to locate record with id of sawry');
         });
     });
   });
@@ -210,6 +231,8 @@ describe('API routes', () => {
         })
         .end((error, response) => {
           response.should.have.status(422);
+          response.body.should.have.property('error');
+          response.body.error.should.equal('You are missing the game_title property.')
         });
     });
   });
@@ -249,8 +272,10 @@ describe('API routes', () => {
         })
         .end((error, response) => {
           response.should.have.status(422);
+          response.body.should.have.property('error');
+          response.body.error.should.equal('You are missing the time property.');
         });
-        done()
+      done();
     });
   });
 
@@ -272,33 +297,58 @@ describe('PATCH /api/v1/games/:id', () => {
               response.body.should.be.a('array');
               response.body[1].should.have.property('body');
               response.body[1].body.should.equal(updateGames.body);
-          });
-       });
+            });
+        });
+    });
+
+    it('should throw an error if a game id is not provided', (done) => {
+      chai.request(server)
+        .post('/api/v1/records')
+        // .set('Authorization', token)
+        .send({})
+        .end((error, response) => {
+          response.should.have.status(422);
+          response.body.should.have.property('id');
+          response.body.error.should.equal('No resource with an id of 2 was found.');
+        });
+      done();
     });
   });
 
   describe('PATCH /api/v1/records/:id', () => {
-      const updateRecords = {
-        rank: '3rd'
-      };
+    const updateRecords = {
+      rank: '3rd',
+    };
 
-      it('should be able to update the body of a record object', () => {
-        chai.request(server)
-          .patch('/api/v1/records/1')
-          // .set('Authorization', token)
-          .send(updateRecords)
-          .end((error, response) => {
-            response.should.have.status(204);
-            chai.request(server)
-              .get('/api/v1/records/1')
-              .end((error, response) => {
-                response.body.should.be.a('array');
-                response.body[1].should.have.property('body');
-                response.body[1].body.should.equal(updateRecords.body);
-              });
-          });
+    it('should be able to update the body of a record object', () => {
+      chai.request(server)
+        .patch('/api/v1/records/1')
+        // .set('Authorization', token)
+        .send(updateRecords)
+        .end((error, response) => {
+          response.should.have.status(204);
+          chai.request(server)
+            .get('/api/v1/records/1')
+            .end((error, response) => {
+              response.body.should.be.a('array');
+              response.body[1].should.have.property('body');
+              response.body[1].body.should.equal(updateRecords.body);
+            });
         });
     });
+
+    it('should throw an error if a record id is not provided', () => {
+      chai.request(server)
+        .post('/api/v1/records')
+        // .set('Authorization', token)
+        .send({})
+        .end((error, response) => {
+          response.should.have.status(422);
+          response.body.should.have.property('id');
+          response.body.error.should.equal('No resource with an id of 2 was found.');
+        });
+    });
+  });
 
   describe('DELETE /api/v1/games/:id/', () => {
 
@@ -309,31 +359,32 @@ describe('PATCH /api/v1/games/:id', () => {
         .end((error, response) => {
           response.should.have.status(204);
           response.body.should.be.a('object');
-            chai.request(server)
-              .get('/api/v1/games/1')
-              .end((error, response) => {
-                response.should.have.status(200);
-              });
-          });
-      });
-    });
-
-    describe('DELETE /api/v1/records/:id/', () => {
-
-      it('should delete a specific game from the records database', () => {
-        chai.request(server)
-          .delete('/api/v1/records/1')
-          // .set('Authorization', token)
-          .end((error, response) => {
-            response.should.have.status(204);
-            response.body.should.be.a('object');
-              chai.request(server)
-                .get('/api/v1/records')
-                .end((error, response) => {
-                  response.should.have.status(200);
-                  response.body.should.be.a('array');
-                });
+          chai.request(server)
+            .get('/api/v1/games/1')
+            .end((error, response) => {
+              response.should.have.status(200);
             });
         });
-      });
+    });
+  });
+
+  describe('DELETE /api/v1/records/:id/', () => {
+
+    it('should delete a specific game from the records database', (done) => {
+      chai.request(server)
+        .delete('/api/v1/records/1')
+        // .set('Authorization', token)
+        .end((error, response) => {
+          response.should.have.status(204);
+          response.body.should.be.a('object');
+          chai.request(server)
+            .get('/api/v1/records')
+            .end((error, response) => {
+              response.should.have.status(200);
+              response.body.should.be.a('array');
+            });
+        });
+      done();
+    });
+  });
 });
