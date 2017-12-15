@@ -354,6 +354,14 @@ describe('PATCH /api/v1/games/:id', () => {
             });
         });
     });
+
+    it('should not be able to delete a game without authorization', () => {
+      chai.request(server)
+        .delete('/api/v1/games/1')
+        .end( (error, response) => {
+          response.should.have.status(403);
+        });
+    });
   });
 
   describe('DELETE /api/v1/records/:id/', () => {
@@ -372,6 +380,14 @@ describe('PATCH /api/v1/games/:id', () => {
             });
         });
       done();
+    });
+
+    it('should not be able to delete a record without authorization', () => {
+      chai.request(server)
+        .delete('/api/v1/records/1')
+        .end( (error, response) => {
+          response.should.have.status(403);
+        });
     });
   });
 });
