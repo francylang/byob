@@ -18,7 +18,7 @@ To recieve a token you can visit our page [here](https://speed-running-database.
 - [**GET records**]()
 - [**POST authenticate**]()
 - [**POST games**]()
-- [**PUT records**]()
+- [**POST records**]()
 - [**DELETE records**]()
 - [**DELETE games**]()
 - [**PATCH records**]()
