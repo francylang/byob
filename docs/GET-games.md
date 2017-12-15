@@ -32,11 +32,6 @@ This endpoint will throw a 404 and a 500 error
     error: 'Error message will be here.'
 }
 ``
-``
-{
-  error: "Unable to locate game record with id of __"
-}
-``
 
 ***
 
