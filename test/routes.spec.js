@@ -11,6 +11,7 @@ const database = require('knex')(configuration);
 chai.use(chaiHttp);
 
 describe('API routes', () => {
+  let token;
 
   before((done) => {
     database.migrate.latest()
@@ -20,8 +21,8 @@ describe('API routes', () => {
       });
     chai.request(server)
       .post('/api/v1/authenticate')
-      .send({ appName: 'SpeedRun', email: 'Francy@turing.io' })
-      // .end((error, response) => token = JSON.parse(response.text).token)
+      .send({ email: 'francy@turing.io', appName: 'SpeedRun' })
+      .end((error, response) => token = response.body.token)
   });
 
   beforeEach((done) => {
@@ -51,6 +52,7 @@ describe('API routes', () => {
           response.body.includes('https://www.speedrun.com/themes/smo/cover-256.png')
           response.body[0].should.have.property('created_at');
           response.body[0].should.have.property('updated_at');
+          // done();
       });
     });
 
@@ -83,8 +85,8 @@ describe('API routes', () => {
           response.body.includes('10')
           response.body[0].should.have.property('created_at');
           response.body[0].should.have.property('updated_at');
+          done();
         });
-        done();
     });
 
     it('should return a 404 if the path is incorrect', (done) => {
@@ -169,4 +171,77 @@ describe('API routes', () => {
         })
     })
   })
+
+  describe('POST /api/v1/games/', () => {
+    it('should be able to add a game to the database', () => {
+      chai.request(server)
+        .post('/api/v1/games')
+        .send({
+          // id: 21,
+          game_title: 'Nickinator',
+          game_image: 'https//:Nickinator.png',
+        })
+        .end((error, response) => {
+          response.should.have.status(201);
+          response.body.should.have.property('game_title');
+          response.body.should.have.property('game_image');
+          chai.request(server)
+            .get('/api/v1/games/')
+            .end((error, response) => {
+              response.body.should.be.a('array');
+              response.body.length.should.equal(3);
+            });
+        });
+    });
+
+    it.skip('should not be able to add a new game if a property is missing', () => {
+      chai.request(server)
+        .post('/api/v1/records')
+        .set('Authorization', token)
+        .send({
+          game_title: 'wow',
+          game_image:'https://amazingpic.png',
+        })
+        .end((error, response) => {
+          response.should.have.status(422);
+        })
+    })
+  });
+
+  describe('POST /api/v1/records/', () => {
+    it('should be able to add a record to the database', () => {
+      chai.request(server)
+        .post('/api/v1/records')
+        .send({
+          // id: 21,
+          handle: 'Nickinator',
+          rank: '1st',
+          time: '00h 01m 01s',
+          game_id: '22'
+        })
+        .end((error, response) => {
+          response.should.have.status(201);
+          response.body.should.have.property('handle');
+          response.body.should.have.property('rank');
+          response.body.should.have.property('time');
+          response.body.should.have.property('game_id');
+          chai.request(server)
+            .get('/api/v1/games/')
+            .end((error, response) => {
+              response.body.should.be.a('array');
+              response.body.length.should.equal(4);
+            });
+        });
+      });
+    });
+
+
+
+
+
+
+
+
+
+
 });

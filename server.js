@@ -33,7 +33,7 @@ const checkAdmin = (request, response, next) => {
   const secret = process.env.DB_SECRET;
   const token =
     request.body.token ||
-    request.param('token') ||
+    request.params('token') ||
     request.headers.authorization;
 
   const decoded = jwt.verify(token, secret);
@@ -42,7 +42,7 @@ const checkAdmin = (request, response, next) => {
     next() :
     response.status(403).send('Invalid request credentials');
 };
-  //  is this error handling redundant? error codes correct? idk
+
 app.post('/api/v1/authenticate', (request, response) => {
   const emailSuffix = request.body.email.split('@')[1];
 
