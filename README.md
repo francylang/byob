@@ -27,4 +27,5 @@ To recieve a token you can visit our page [here](https://speed-running-database.
 ### Contributors
 
 [Francy Lang](https://github.com/francylang/)
+
 [Nick Teets](https://github.com/nicktu12/)
