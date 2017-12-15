@@ -47,7 +47,9 @@ describe('API routes', () => {
           response.body[0].should.have.property('game_image');
           response.body.includes('https://www.speedrun.com/themes/smo/cover-256.png');
           response.body[0].should.have.property('created_at');
+          response.body.includes('2017-12-12T22:08:49.706Z');
           response.body[0].should.have.property('updated_at');
+          response.body.includes('2017-12-12T22:08:49.706Z');
         });
     });
 
@@ -79,7 +81,9 @@ describe('API routes', () => {
           response.body[0].should.have.property('game_id');
           response.body.includes('10');
           response.body[0].should.have.property('created_at');
+          response.body.includes('2017-12-12T22:08:49.706Z');
           response.body[0].should.have.property('updated_at');
+          response.body.includes('2017-12-12T22:08:49.706Z');
           done();
         });
     });
@@ -130,13 +134,9 @@ describe('API routes', () => {
           response.should.be.json;
           response.body.should.be.a('array');
           response.body.length.should.equal(1);
-          response.body[0].should.have.property('game_title');
           response.body.includes({ game_title: 'Super Mario Bros.' });
-          response.body[0].should.have.property('game_image');
           response.body.includes({ game_image: 'https://www.speedrun.com/themes/smb1/cover-256.png' });
-          response.body[0].should.have.property('created_at');
           response.body.includes({ created_at: '2017-12-12T22:08:49.578Z' });
-          response.body[0].should.have.property('updated_at');
           response.body.includes({ created_at: '2017-12-12T22:08:49.578Z' });
         });
       done();
@@ -148,7 +148,7 @@ describe('API routes', () => {
         .end((error, response) => {
           response.should.have.status(404);
           response.body.should.have.property('error');
-          response.body.error.should.eql('Unable to locate record with id of loser')
+          response.body.error.should.equal('Unable to locate record with id of loser')
         });
       done();
     });
@@ -163,17 +163,11 @@ describe('API routes', () => {
           response.should.be.json;
           response.body.should.be.a('array');
           // response.body.length.should.equal();
-          response.body[0].should.have.property('handle');
           response.body.includes({ handle: 'LordOfSchnitzel' });
-          response.body[0].should.have.property('rank');
           response.body.includes({ rank: '26th' });
-          response.body[0].should.have.property('time');
           response.body.includes({ time: '1h 27m 30s' });
-          response.body[0].should.have.property('game_id');
           response.body.includes({ game_id: 2 });
-          response.body[0].should.have.property('created_at');
           response.body.includes({ created_at: '2017-12-12T22:08:51.135Z' });
-          response.body[0].should.have.property('updated_at');
           response.body.includes({ created_at: '2017-12-12T22:08:51.135Z' });
         });
     });
@@ -214,7 +208,6 @@ describe('API routes', () => {
     it('should not be able to add a new game if image property is missing', () => {
       chai.request(server)
         .post('/api/v1/games')
-        // .set('Authorization', token)
         .send({
           game_title: 'wow',
         })
@@ -266,7 +259,6 @@ describe('API routes', () => {
     it('should not be able to add a new record if a property is missing', (done) => {
       chai.request(server)
         .post('/api/v1/records')
-        // .set('Authorization', token)
         .send({
           handle: 'yolo',
           rank: '1st',
@@ -288,7 +280,6 @@ describe('PATCH /api/v1/games/:id', () => {
     it('should be able to update the body of a game object', () => {
       chai.request(server)
         .patch('/api/v1/games/1')
-      // .set('Authorization', token)
         .send(updateGames)
         .end((error, response) => {
           response.should.have.status(204);
@@ -305,7 +296,6 @@ describe('PATCH /api/v1/games/:id', () => {
     it('should throw an error if a game id is not provided', (done) => {
       chai.request(server)
         .post('/api/v1/records')
-        // .set('Authorization', token)
         .send({})
         .end((error, response) => {
           response.should.have.status(422);
@@ -324,7 +314,6 @@ describe('PATCH /api/v1/games/:id', () => {
     it('should be able to update the body of a record object', () => {
       chai.request(server)
         .patch('/api/v1/records/1')
-        // .set('Authorization', token)
         .send(updateRecords)
         .end((error, response) => {
           response.should.have.status(204);
@@ -341,7 +330,6 @@ describe('PATCH /api/v1/games/:id', () => {
     it('should throw an error if a record id is not provided', () => {
       chai.request(server)
         .post('/api/v1/records')
-        // .set('Authorization', token)
         .send({})
         .end((error, response) => {
           response.should.have.status(422);
@@ -356,7 +344,6 @@ describe('PATCH /api/v1/games/:id', () => {
     it('should delete a specific game from the games database', () => {
       chai.request(server)
         .delete('/api/v1/games/1')
-        // .set('Authorization', token)
         .end((error, response) => {
           response.should.have.status(204);
           response.body.should.be.a('object');
@@ -374,7 +361,6 @@ describe('PATCH /api/v1/games/:id', () => {
     it('should delete a specific game from the records database', (done) => {
       chai.request(server)
         .delete('/api/v1/records/1')
-        // .set('Authorization', token)
         .end((error, response) => {
           response.should.have.status(204);
           response.body.should.be.a('object');
