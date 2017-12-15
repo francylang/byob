@@ -18,6 +18,10 @@ describe('API routes', () => {
       .catch((error) => {
         throw error;
       });
+    chai.request(server)
+      .post('/api/v1/authenticate')
+      .send({ appName: 'SpeedRun', email: 'Francy@turing.io' })
+      // .end((error, response) => token = JSON.parse(response.text).token)
   });
 
   beforeEach((done) => {
