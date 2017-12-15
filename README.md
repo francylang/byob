@@ -14,12 +14,12 @@ To recieve a token you can visit our page [here](https://speed-running-database.
 
 ## Endpoints
 
-- [**GET games**]()
-- [**GET records**]()
-- [**POST authenticate**]()
-- [**POST games**]()
-- [**POST records**]()
-- [**DELETE records**]()
-- [**DELETE games**]()
-- [**PATCH records**]()
-- [**PATCH games**]()
+- [**GET games**](https://github.com/francylang/byob/blob/master/docs/GET-games.md)
+- [**GET records**](https://github.com/francylang/byob/blob/master/docs/GET-records.md)
+- [**POST authenticate**](https://github.com/francylang/byob/blob/master/docs/POST-authenticate.md)
+- [**POST games**](https://github.com/francylang/byob/blob/master/docs/POST-games.md)
+- [**POST records**](https://github.com/francylang/byob/blob/master/docs/POST-records.md)
+- [**DELETE records**](https://github.com/francylang/byob/blob/master/docs/DELETE-records.md)
+- [**DELETE games**](https://github.com/francylang/byob/blob/master/docs/DELETE-games.md)
+- [**PATCH records**](https://github.com/francylang/byob/blob/master/docs/PATCH-records.md)
+- [**PATCH games**](https://github.com/francylang/byob/blob/master/docs/PATCH-games.md)
