@@ -190,7 +190,7 @@ describe('API routes', () => {
   });
 
   describe('POST /api/v1/games/', () => {
-    it('should be able to add a game to the database', () => {
+    it('should be able to add a game to the database', (done) => {
       chai.request(server)
         .post('/api/v1/games')
         .send({
@@ -208,6 +208,7 @@ describe('API routes', () => {
               response.body.length.should.equal(21);
             });
         });
+        done();
     });
 
     it('should not be able to add a new game if image property is missing', () => {
