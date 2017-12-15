@@ -14,7 +14,7 @@ Returns all the records from the database, including the runner's handle, rank, 
 
 **game_id** - The game id parameter will select all the records from the database that match the game id in the given parameter.
 
-  /api/v1/records?game_id:22
+    /api/v1/records?game_id:22
 
 ***
 
@@ -33,16 +33,11 @@ A JSON array of objects with key-value pairs
 ## Errors
 This endpoint will throw a 404 and a 500 error
 
-``
+```
 {
     error: 'Error message will be here.'
 }
-``
-``
-{
-  error: "Unable to locate record with id of __"
-}
-``
+```
 
 ***
 
