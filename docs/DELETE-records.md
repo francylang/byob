@@ -23,6 +23,7 @@ This endpoint will accept a JSON Web Token query parameter in the url, a token i
   "game_id": 22,
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5pY2tAdHVyaW5nLmlvIiwiYXBwTmFtZSI6InNwZWVkcnVubmluZyIsImFkbWluIjp0cnVlLCJpYXQiOjE1MTMyOTk5MzgsImV4cCI6MTUxMzQ3MjczOH0.Q-ARMd5U4mnH_wAWFA67mTVusFpS6pkBarS9XTVJifo"
 }
+```
 
 ## Return format
 
@@ -35,11 +36,6 @@ This endpoint will throw a 422 and 500 error
 ``
 {
   error: 'Error message will be here'
-}
-``
-``
-{
-  error: 'No resource with an id of __ was found.'
 }
 ``
 
