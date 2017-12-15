@@ -42,9 +42,6 @@ This endpoint will throw a 422 and a 500 error
 {
     error: 'Error message will be here.'
 }
-{
-    error: 'You are missing the __ property'
-}
 ``
 
 ***
