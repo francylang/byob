@@ -23,3 +23,8 @@ To recieve a token you can visit our page [here](https://speed-running-database.
 - [**DELETE games**](https://github.com/francylang/byob/blob/master/docs/DELETE-games.md)
 - [**PATCH records**](https://github.com/francylang/byob/blob/master/docs/PATCH-records.md)
 - [**PATCH games**](https://github.com/francylang/byob/blob/master/docs/PATCH-games.md)
+
+### Contributors
+
+[Francy Lang](https://github.com/francylang/)
+[Nick Teets](https://github.com/nicktu12/)
