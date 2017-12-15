@@ -235,11 +235,51 @@ describe('API routes', () => {
       });
     });
 
+describe('PATCH /api/v1/games/:id', () => {
+  const updateGames = {
+    game_title: 'WinnerWinner'
+  };
 
+  it('should be able to update the body of a game object', () => {
+    chai.request(server)
+    .patch('/api/v1/games/1')
+    // .set('Authorization', token)
+    .send(updateGames)
+    .end((error, response) => {
+      response.should.have.status(204);
+      chai.request(server)
+        .get('/api/v1/games/1')
+        .end((error, response) => {
+          response.body.should.be.a('array');
+          response.body[1].should.have.property('body');
+          response.body[1].body.should.equal(updateGames.body);
+        });
+    });
+  });
 
+  describe('PATCH /api/v1/records/:id', () => {
+    const updateRecords = {
+      rank: '3rd'
+    };
 
-
-
+    it('should be able to update the body of a record object', () => {
+      chai.request(server)
+      .patch('/api/v1/records/1')
+      // .set('Authorization', token)
+      .send(updateGames)
+      .end((error, response) => {
+        response.should.have.status(204);
+        chai.request(server)
+          .get('/api/v1/records/1')
+          .end((error, response) => {
+            response.body.should.be.a('array');
+            response.body[1].should.have.property('body');
+            response.body[1].body.should.equal(updateRecords.body);
+          });
+        });
+      });
+    });
+  });
 
 
 
