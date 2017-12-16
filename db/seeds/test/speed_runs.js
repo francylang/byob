@@ -1,5 +1,5 @@
 
-const gamesData = require('../../../utils/game-results');
+const gamesData = require('../../../utils/game-results-test');
 
 const createRecord = (knex, record) => (
   knex('records').insert(record)

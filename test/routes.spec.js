@@ -34,23 +34,18 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/games', () => {
-    it('should return all games', (done) => {
+    it('should return all games', () => {
       return chai.request(server)
         .get('/api/v1/games')
         .then((response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
-          response.body.length.should.equal(20);
+          response.body.length.should.equal(3);
           response.body[0].should.have.property('game_title');
-          response.body.includes('Mega Man X');
+          response.body.includes('Super Mario Odyssey');
           response.body[0].should.have.property('game_image');
           response.body.includes('https://www.speedrun.com/themes/smo/cover-256.png');
-          response.body[0].should.have.property('created_at');
-          response.body.includes('2017-12-12T22:08:49.706Z');
-          response.body[0].should.have.property('updated_at');
-          response.body.includes('2017-12-12T22:08:49.706Z');
-          done();
         });
     });
 
@@ -72,7 +67,7 @@ describe('API routes', () => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
-          response.body.length.should.equal(5292);
+          response.body.length.should.equal(9);
           response.body[0].should.have.property('handle');
           response.body.includes('infinitemystery');
           response.body[0].should.have.property('rank');
