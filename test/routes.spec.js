@@ -34,7 +34,7 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/games', () => {
-    it('should return all games', () => {
+    it('should return all games', (done) => {
       return chai.request(server)
         .get('/api/v1/games')
         .then((response) => {
@@ -50,6 +50,7 @@ describe('API routes', () => {
           response.body.includes('2017-12-12T22:08:49.706Z');
           response.body[0].should.have.property('updated_at');
           response.body.includes('2017-12-12T22:08:49.706Z');
+          done();
         });
     });
 
