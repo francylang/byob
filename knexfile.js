@@ -1,4 +1,4 @@
-// Update with your config settings.
+/* eslint-disable */
 
 module.exports = {
 
@@ -28,9 +28,12 @@ module.exports = {
 
   production: {
     client: 'pg',
-    connection: `${process.env.DATABASE_URL}?ssl=true`,
+    connection: process.env.DATABASE_URL + `?ssl=true`,
     migrations: {
       directory: './db/migrations',
+    },
+    seeds: {
+      directory: './db/seeds/prod',
     },
     useNullAsDefault: true,
   },

@@ -1,5 +1,5 @@
 
-const gamesData = require('../../../utils/game-results-test');
+const gamesData = require('../../../utils/game-results');
 
 const createRecord = (knex, record) => (
   knex('records').insert(record)
@@ -21,6 +21,7 @@ const createGames = (knex, game) => (
           game_id: gameId[0],
         }));
       });
+
       return Promise.all(recordPromises);
     })
 );
@@ -34,6 +35,7 @@ exports.seed = (knex, Promise) => (
       gamesData.forEach((game) => {
         gamePromises.push(createGames(knex, game));
       });
+
       return Promise.all(gamePromises);
     })
     // eslint-disable-next-line
