@@ -34,10 +34,10 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/games', () => {
-    it('should return all games', () => {
-      return chai.request(server)
+    it('should return all games', (done) => {
+     chai.request(server)
         .get('/api/v1/games')
-        .then((response) => {
+        .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
@@ -50,6 +50,7 @@ describe('API routes', () => {
           response.body.includes('2017-12-12T22:08:49.706Z');
           response.body[0].should.have.property('updated_at');
           response.body.includes('2017-12-12T22:08:49.706Z');
+          done();
         });
     });
 
@@ -67,7 +68,7 @@ describe('API routes', () => {
     it('should return all of the game records', (done) => {
       chai.request(server)
         .get('/api/v1/records')
-        .then((response) => {
+        .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
@@ -90,10 +91,10 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/records/:id', () => {
-    it('should retrieve a record based on the id', (done) => {
+    it('should retrieve a record based on the id', () => {
       chai.request(server)
         .get('/api/v1/records/7')
-        .then((response) => {
+        .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
@@ -111,7 +112,6 @@ describe('API routes', () => {
           response.body[0].should.have.property('updated_at');
           response.body.includes({ created_at: '2017-12-12T22:08:49.706Z' });
         });
-      done();
     });
 
     it('should return a 404 if the path is incorrect', () => {
@@ -126,10 +126,10 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/games/:id', () => {
-    it('should retrieve a game based on the id', (done) => {
+    it('should retrieve a game based on the id', () => {
       chai.request(server)
         .get('/api/v1/games/7')
-        .then((response) => {
+        .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
@@ -139,10 +139,9 @@ describe('API routes', () => {
           response.body.includes({ created_at: '2017-12-12T22:08:49.578Z' });
           response.body.includes({ created_at: '2017-12-12T22:08:49.578Z' });
         });
-      done();
     });
 
-    it('should return a 404 if the path is incorrect', (done) => {
+    it('should return a 404 if the path is incorrect', () => {
       chai.request(server)
         .get('/api/v1/loser')
         .end((error, response) => {
@@ -150,7 +149,6 @@ describe('API routes', () => {
           response.body.should.have.property('error');
           response.body.error.should.equal('Unable to locate record with id of loser')
         });
-      done();
     });
   });
 
@@ -158,11 +156,10 @@ describe('API routes', () => {
     it('should retrieve all records associated with a specific game', () => {
       chai.request(server)
         .get('/api/v1/games/10/records')
-        .then((response) => {
+        .end((error, response) => {
           response.should.have.status(200);
           response.should.be.json;
           response.body.should.be.a('array');
-          // response.body.length.should.equal();
           response.body.includes({ handle: 'LordOfSchnitzel' });
           response.body.includes({ rank: '26th' });
           response.body.includes({ time: '1h 27m 30s' });
@@ -172,40 +169,41 @@ describe('API routes', () => {
         });
     });
 
-    it('should return a 404 if the path is incorrect', () => {
+    it('should return a 404 if the path is incorrect', (done) => {
       chai.request(server)
         .get('/api/v1/sawry')
         .end((error, response) => {
           response.should.have.status(404);
           response.body.should.have.property('error');
           response.body.error.should.equal('Unable to locate record with id of sawry');
+          done();
         });
     });
   });
 
   describe('POST /api/v1/games/', () => {
-    it('should be able to add a game to the database', (done) => {
+    it.only('should be able to add a game to the database', (done) => {
       chai.request(server)
-        .post('/api/v1/games')
+        .post('/api/v1/games/')
         .send({
           game_title: 'Nickinator',
           game_image: 'https//:Nickinator.png',
         })
         .end((error, response) => {
-          response.body.should.have.status(201);
-          response.body.should.have.property('game_title');
-          response.body.should.have.property('game_image');
+          // response.body.should.have.status(201);
+          // response.body.should.have.property('game_title');
+          // response.body.should.have.property('game_image');
           chai.request(server)
             .get('/api/v1/games/')
             .end((error, response) => {
               response.body.should.be.a('array');
-              response.body.length.should.equal(21);
+              response.body.length.should.equal(20);
+              done();
             });
         });
-        done();
     });
 
-    it('should not be able to add a new game if image property is missing', () => {
+    it('should not be able to add a new game if image property is missing', (done) => {
       chai.request(server)
         .post('/api/v1/games')
         .send({
@@ -213,10 +211,11 @@ describe('API routes', () => {
         })
         .end((error, response) => {
           response.should.have.status(422);
+          done();
         });
     });
 
-    it('should not be able to add a new game if title property is missing', () => {
+    it('should not be able to add a new game if title property is missing', (done) => {
       chai.request(server)
         .post('/api/v1/games')
         // .set('Authorization', token)
@@ -227,6 +226,7 @@ describe('API routes', () => {
           response.should.have.status(422);
           response.body.should.have.property('error');
           response.body.error.should.equal('You are missing the game_title property.')
+          done();
         });
     });
   });
@@ -267,8 +267,8 @@ describe('API routes', () => {
           response.should.have.status(422);
           response.body.should.have.property('error');
           response.body.error.should.equal('You are missing the time property.');
+          done();
         });
-      done();
     });
   });
 
@@ -277,7 +277,7 @@ describe('PATCH /api/v1/games/:id', () => {
       game_title: 'WinnerWinner',
     };
 
-    it('should be able to update the body of a game object', () => {
+    it('should be able to update the body of a game object', (done) => {
       chai.request(server)
         .patch('/api/v1/games/1')
         .send(updateGames)
@@ -289,6 +289,7 @@ describe('PATCH /api/v1/games/:id', () => {
               response.body.should.be.a('array');
               response.body[1].should.have.property('body');
               response.body[1].body.should.equal(updateGames.body);
+              done();
             });
         });
     });
@@ -301,8 +302,8 @@ describe('PATCH /api/v1/games/:id', () => {
           response.should.have.status(422);
           response.body.should.have.property('id');
           response.body.error.should.equal('No resource with an id of 2 was found.');
+          done();
         });
-      done();
     });
   });
 
@@ -311,7 +312,7 @@ describe('PATCH /api/v1/games/:id', () => {
       rank: '3rd',
     };
 
-    it('should be able to update the body of a record object', () => {
+    it('should be able to update the body of a record object', (done) => {
       chai.request(server)
         .patch('/api/v1/records/1')
         .send(updateRecords)
@@ -323,11 +324,12 @@ describe('PATCH /api/v1/games/:id', () => {
               response.body.should.be.a('array');
               response.body[1].should.have.property('body');
               response.body[1].body.should.equal(updateRecords.body);
+              done();
             });
         });
     });
 
-    it('should throw an error if a record id is not provided', () => {
+    it('should throw an error if a record id is not provided', (done) => {
       chai.request(server)
         .post('/api/v1/records')
         .send({})
@@ -335,6 +337,7 @@ describe('PATCH /api/v1/games/:id', () => {
           response.should.have.status(422);
           response.body.should.have.property('id');
           response.body.error.should.equal('No resource with an id of 2 was found.');
+          done();
         });
     });
   });
@@ -352,6 +355,14 @@ describe('PATCH /api/v1/games/:id', () => {
             .end((error, response) => {
               response.should.have.status(200);
             });
+        });
+    });
+
+    it('should not be able to delete a game without authorization', () => {
+      chai.request(server)
+        .delete('/api/v1/games/1')
+        .end((error, response) => {
+          response.should.have.status(403);
         });
     });
   });
@@ -372,6 +383,14 @@ describe('PATCH /api/v1/games/:id', () => {
             });
         });
       done();
+    });
+
+    it('should not be able to delete a record without authorization', () => {
+      chai.request(server)
+        .delete('/api/v1/records/1')
+        .end((error, response) => {
+          response.should.have.status(403);
+        });
     });
   });
 });
