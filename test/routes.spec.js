@@ -151,7 +151,7 @@ describe('API routes', () => {
   });
 
   describe('GET /api/v1/games/:id/records', () => {
-    it('should retrieve all records associated with a specific game', () => {
+    it('should retrieve all records associated with a specific game', (done) => {
       chai.request(server)
         .get('/api/v1/games/10/records')
         .then((response) => {
@@ -166,6 +166,7 @@ describe('API routes', () => {
           response.body.includes({ created_at: '2017-12-12T22:08:51.135Z' });
           response.body.includes({ created_at: '2017-12-12T22:08:51.135Z' });
         });
+      done();
     });
 
     it('should return a 404 if the path is incorrect', () => {
