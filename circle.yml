@@ -16,4 +16,4 @@ deployment:
   production:
     branch: master
     heroku:
-      appname: speed-running-database
+      appname: speedrunning-database
